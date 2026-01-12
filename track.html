@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>China Cargo TRACKING | SYSTEM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="kargo_verileri.js"></script>
+    <style>
+        :root { --bg: #000000; --card: #111111; --primary: #007AFF; --text: #ffffff; --border: #2c2c2e; --dim: #86868b; }
+        .light-mode { --bg: #ffffff; --card: #f5f5f7; --text: #1d1d1f; --border: #d2d2d7; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text); transition: 0.3s; min-height: 100vh; }
+
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; border-bottom: 1px solid var(--border); }
+        .back-link { color: var(--text); text-decoration: none; font-weight: 600; font-size: 14px; }
+
+        .container { padding: 40px 5%; max-width: 500px; margin: auto; }
+        .input-group { position: relative; margin-top: 20px; }
+        input { width: 100%; background: var(--card); border: 2px solid var(--border); padding: 18px; border-radius: 20px; color: var(--text); font-size: 16px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); }
+        .btn-search { width: 100%; background: var(--primary); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; margin-top: 15px; cursor: pointer; font-size: 16px; }
+
+        #res-card { display: none; margin-top: 30px; background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid var(--border); animation: slideUp 0.4s ease; }
+        .status-badge { display: inline-block; background: rgba(0,122,255,0.1); color: var(--primary); padding: 6px 15px; border-radius: 10px; font-weight: 700; font-size: 12px; margin-bottom: 15px; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .info-label { color: var(--dim); }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-link" id="nav-back"><i class="fas fa-chevron-left"></i> Yza</a>
+        <div style="font-weight:900; letter-spacing:-1px">China Cargo<span style="color:var(--primary)">.</span>TRACK</div>
+        <i class="fas fa-adjust" onclick="document.body.classList.toggle('light-mode')" style="cursor:pointer"></i>
+    </nav>
+
+    <div class="container">
+        <h1 id="page-title" style="font-size: 28px; font-weight: 800;">Kargo Gözlegi</h1>
+        <p id="page-desc" style="color:var(--dim); font-size: 14px; margin-top: 5px;">Koduňyzy giriziň we maglumatlary alyň.</p>
+
+        <div class="input-group">
+            <input type="text" id="cargoID" placeholder="Meselem: EL777">
+            <button class="btn-search" onclick="trackCargo()" id="btn-text">GÖZLE</button>
+        </div>
+
+        <div id="res-card">
+            <div class="status-badge" id="out-status">---</div>
+            <div class="info-row"><span class="info-label" id="lbl-id">ID:</span><b id="out-id">---</b></div>
+            <div class="info-row"><span class="info-label" id="lbl-loc">Ýeri:</span><b id="out-loc">---</b></div>
+            <div class="info-row"><span class="info-label" id="lbl-kg">Agramy:</span><b id="out-kg">---</b></div>
+            <div class="info-row"><span class="info-label" id="lbl-date">Sene:</span><b id="out-date">---</b></div>
+        </div>
+
+        <p id="err-msg" style="display:none; color:#ff3b30; text-align:center; margin-top:20px; font-weight:700"></p>
+    </div>
+
+    <script>
+        const langDict = {
+            tm: { back: "Geri", title: "Kargo Gözlegi", desc: "Koduňyzy giriziň we maglumatlary alyň.", btn: "GÖZLE", err: "Kod tapylmady!", loc: "Ýeri:", kg: "Agramy:", date: "Sene:", place: "Meselem: EL777" },
+            tr: { back: "Geri", title: "Kargo Takibi", desc: "Kodunuzu girin ve bilgileri alın.", btn: "SORGULA", err: "Kod bulunamadı!", loc: "Konum:", kg: "Ağırlık:", date: "Tarih:", place: "Örn: EL777" },
+            en: { back: "Back", title: "Track Cargo", desc: "Enter your code and get details.", btn: "TRACK", err: "Code not found!", loc: "Location:", kg: "Weight:", date: "Date:", place: "Ex: EL777" },
+            ru: { back: "Назад", title: "Поиск Груза", desc: "Введите код для получения данных.", btn: "ПОИСК", err: "Код не найден!", loc: "Место:", kg: "Вес:", date: "Дата:", place: "Пример: EL777" }
+        };
+
+        // Hafızadaki dili al
+        const currentLang = localStorage.getItem('selectedLang') || 'tm';
+
+        function applyLanguage() {
+            const d = langDict[currentLang];
+            document.getElementById('nav-back').innerHTML = `<i class="fas fa-chevron-left"></i> ${d.back}`;
+            document.getElementById('page-title').innerText = d.title;
+            document.getElementById('page-desc').innerText = d.desc;
+            document.getElementById('btn-text').innerText = d.btn;
+            document.getElementById('cargoID').placeholder = d.place;
+            document.getElementById('lbl-loc').innerText = d.loc;
+            document.getElementById('lbl-kg').innerText = d.kg;
+            document.getElementById('lbl-date').innerText = d.date;
+        }
+
+        function trackCargo() {
+            const id = document.getElementById('cargoID').value.trim().toUpperCase();
+            const card = document.getElementById('res-card');
+            const err = document.getElementById('err-msg');
+
+            if (typeof cargoDatabase !== 'undefined' && cargoDatabase[id]) {
+                const data = cargoDatabase[id];
+                err.style.display = 'none';
+                card.style.display = 'block';
+                
+                document.getElementById('out-status').innerText = data.status[currentLang];
+                document.getElementById('out-id').innerText = id;
+                document.getElementById('out-loc').innerText = data.loc;
+                document.getElementById('out-kg').innerText = data.kg;
+                document.getElementById('out-date').innerText = data.date;
+            } else {
+                card.style.display = 'none';
+                err.style.display = 'block';
+                err.innerText = langDict[currentLang].err;
+            }
+        }
+
+        window.onload = applyLanguage;
+    </script>
+</body>
+</html>
