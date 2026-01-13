@@ -7,48 +7,261 @@
     <title>China Cargo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root { --bg: #000000; --card: #111111; --primary: #007AFF; --text: #ffffff; --text-dim: #86868b; --border: #2c2c2e; }
-        .light-mode { --bg: #ffffff; --card: #f5f5f7; --primary: #007AFF; --text: #1d1d1f; --text-dim: #6e6e73; --border: #d2d2d7; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); transition: 0.3s; padding-bottom: 100px; overflow-x: hidden; }
+        :root {
+            --bg: #000000;
+            --card: #111111;
+            --primary: #007AFF;
+            --text: #ffffff;
+            --text-dim: #86868b;
+            --border: #2c2c2e;
+        }
 
-        #offline-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px); z-index: 9999; display: none; align-items: center; justify-content: center; text-align: center; }
-        .off-box { background: var(--card); padding: 30px; border-radius: 30px; border: 1px solid var(--border); }
+        .light-mode {
+            --bg: #ffffff;
+            --card: #f5f5f7;
+            --primary: #007AFF;
+            --text: #1d1d1f;
+            --text-dim: #6e6e73;
+            --border: #d2d2d7;
+        }
 
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: rgba(var(--bg), 0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
-        .logo { font-size: 20px; font-weight: 800; letter-spacing: -1px; }
-        .nav-tools { display: flex; align-items: center; gap: 15px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
 
-        .lang-dropdown { position: relative; }
-        .lang-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; }
-        .lang-menu { position: absolute; top: 110%; right: 0; background: var(--card); border: 1px solid var(--border); border-radius: 12px; display: none; min-width: 140px; }
-        .lang-menu.show { display: block; }
-        .lang-item { padding: 12px 15px; font-size: 14px; cursor: pointer; border-bottom: 1px solid var(--border); }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            transition: 0.3s;
+            padding-bottom: 100px;
+            overflow-x: hidden;
+        }
 
-        .hero { padding: 40px 5% 20px; text-align: center; }
-        .hero h1 { font-size: 40px; font-weight: 800; letter-spacing: -2px; }
-        .hero span { color: var(--primary); }
+        #offline-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
 
-        .stats-bar { display: flex; justify-content: space-around; padding: 20px 5%; text-align: center; }
-        .stats-bar b { display: block; font-size: 22px; color: var(--primary); }
-        .stats-bar span { font-size: 10px; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
+        .off-box {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+        }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 5%; }
-        .f-card { background: var(--card); padding: 20px; border-radius: 24px; border: 1px solid var(--border); }
-        .f-card i { color: var(--primary); font-size: 20px; margin-bottom: 10px; display: block; }
-        .f-card h3 { font-size: 14px; margin-bottom: 5px; }
-        .f-card p { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: rgba(var(--bg), 0.8);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
 
-        .faq { padding: 10px 5%; }
-        .faq-item { background: var(--card); margin-bottom: 8px; border-radius: 15px; border: 1px solid var(--border); overflow: hidden; }
-        .faq-q { padding: 15px; font-size: 13px; font-weight: 700; display: flex; justify-content: space-between; cursor: pointer; }
-        .faq-a { padding: 0 15px; max-height: 0; overflow: hidden; transition: 0.3s; color: var(--text-dim); font-size: 12px; }
-        .faq-item.open .faq-a { padding-bottom: 15px; max-height: 100px; }
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
 
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(20px); border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-around; padding: 12px; z-index: 2000; }
-        .b-item { color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; opacity: 0.6; }
-        .b-item i { font-size: 20px; }
-        .b-item.active { opacity: 1; color: var(--primary); }
+        .nav-tools {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .lang-dropdown {
+            position: relative;
+        }
+
+        .lang-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .lang-menu {
+            position: absolute;
+            top: 110%;
+            right: 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: none;
+            min-width: 140px;
+        }
+
+        .lang-menu.show {
+            display: block;
+        }
+
+        .lang-item {
+            padding: 12px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero {
+            padding: 40px 5% 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+
+        .hero span {
+            color: var(--primary);
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 5%;
+            text-align: center;
+        }
+
+        .stats-bar b {
+            display: block;
+            font-size: 22px;
+            color: var(--primary);
+        }
+
+        .stats-bar span {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 5%;
+        }
+
+        .f-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .f-card i {
+            color: var(--primary);
+            font-size: 20px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .f-card h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .f-card p {
+            font-size: 11px;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        .faq {
+            padding: 10px 5%;
+        }
+
+        .faq-item {
+            background: var(--card);
+            margin-bottom: 8px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .faq-q {
+            padding: 15px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .faq-a {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: 0.3s;
+            color: var(--text-dim);
+            font-size: 12px;
+        }
+
+        .faq-item.open .faq-a {
+            padding-bottom: 15px;
+            max-height: 100px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px;
+            z-index: 2000;
+        }
+
+        .b-item {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            opacity: 0.6;
+        }
+
+        .b-item i {
+            font-size: 20px;
+        }
+
+        .b-item.active {
+            opacity: 1;
+            color: var(--primary);
+        }
     </style>
 </head>
 
@@ -78,27 +291,29 @@
     </nav>
 
     <header class="hero">
-        <h1 id="h1">Ygtybarly <span>Logistika</span></h1>
-        <p id="hp" style="color:var(--text-dim);font-size:14px;margin-top:5px;">CN ➔ TM arasynda iň çalt kargo.</p>
+        <h1 id="h1">Ynamly <span>Kargo</span></h1>
+        <p id="hp" style="color:var(--text-dim);font-size:14px;margin-top:5px;">HT ➔ TM arasynda iň çalt kargo.</p>
     </header>
 
-    <div class="stats-bar">
-        <div><b class="num" data-val="832">0</b><span id="s1">Müşderi</span></div>
-        <div><b class="num" data-val="2">0</b><span id="s2">Tejribe</span></div>
-        <div><b class="num" data-val="24">0</b><span id="s3">Sagat Hyzmat</span></div>
-    </div>
-
     <div class="grid">
-        <div class="f-card"><i class="fas fa-bolt"></i><h3 id="f1-t">Tizlik</h3><p id="f1-p">5-7 günde gowşuryş.</p></div>
-        <div class="f-card"><i class="fas fa-shield-alt"></i><h3 id="f2-t">Ygtybar</h3><p id="f2-p">Ätiýaçlandyrylan ýükler.</p></div>
+        <div class="f-card"><i class="fas fa-bolt"></i>
+            <h3 id="f1-t">Tizlik</h3>
+            <p id="f1-p">7-14 günde gowşuryş.</p>
+        </div>
+        <div class="f-card"><i class="fas fa-shield-alt"></i>
+            <h3 id="f2-t">Ynamly</h3>
+            <p id="f2-p">Ätiýaçlandyrylan ýükler.</p>
+        </div>
     </div>
 
     <section style="padding: 40px 5%; text-align: center;">
         <div style="background: var(--card); padding: 30px; border-radius: 28px; border: 1px solid var(--border);">
             <i class="fas fa-box-open" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
             <h2 id="track-h2">Ýüküňi yzarla</h2>
-            <p id="track-p" style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Harydyňyzyň ýagdaýyny we nirededigini bilmek üçin aşakdaky düwmä basyň.</p>
-            <a href="track.html" id="track-link" style="display: block; background: var(--primary); color: white; text-decoration: none; padding: 18px; border-radius: 18px; font-weight: 800; letter-spacing: 1px; transition: 0.3s;">
+            <p id="track-p" style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Harydyňyzyň ýagdaýyny
+                we nirededigini bilmek üçin aşakdaky düwmä basyň.</p>
+            <a href="track.html" id="track-link"
+                style="display: block; background: var(--primary); color: white; text-decoration: none; padding: 18px; border-radius: 18px; font-weight: 800; letter-spacing: 1px; transition: 0.3s;">
                 GÖZLEG SAHYPASINA GIT <i class="fas fa-external-link-alt" style="margin-left: 10px;"></i>
             </a>
         </div>
@@ -113,6 +328,14 @@
             <div class="faq-q"><span id="q2">Bahalar nähili?</span><i class="fas fa-plus"></i></div>
             <div class="faq-a" id="a2">Bahalar ýüküňize görä iň amatly şertlerde hasaplanýar.</div>
         </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-q"><span id="q2">Satyn alan önümleriňizi yzyna gaýtarmak isleseňiz näme bolýar?</span><i class="fas fa-plus"></i></div>
+            <div class="faq-a" id="a2">Satyn alan önümleriňizi yzyna gaýtarsaňyz, 50% yzyna gaýtarylmaz; öň tölän puluňyz yzyna gaýtarylmaz.</div>
+        </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+            <div class="faq-q"><span id="q2">Aýratyn isleýän önümlerimizi getirýärsiňizmi?</span><i class="fas fa-plus"></i></div>
+            <div class="faq-a" id="a2">Hawa, Hytaýdan isleýän zatlaryňyzy import edýäris we bize Telegram, TikTok we WhatsApp arkaly habarlaşyp bilersiňiz.</div>
+        </div>
     </div>
 
     <div class="bottom-nav">
@@ -124,10 +347,10 @@
 
     <script>
         const dict = {
-            tm: { h1: "Ygtybarly <span>Logistika</span>", hp: "CN ➔ TM arasynda iň çalt kargo.", s1: "Müşderi", s2: "Tejribe", s3: "Sagat Hyzmat", f1t: "Tizlik", f1p: "7-14 günde gowşuryş.", f2t: "Ygtybar", f2p: "Ätiýaçlandyrylan ýükler.", th: "Ýüküňi yzarla", tp: "Harydyňyzyň ýagdaýyny we nirededigini bilmek üçin aşakdaky düwmä basyň.", tl: "GÖZLEG SAHYPASINA GIT", q1: "Näçe günde barýar?", a1: "Howa ýoly: 7-14 gün. Gara ýol: 20-25 gün.", q2: "Bahalar nähili?", a2: "Iň amatly nyrhlar biziň bilen.", offH: "Baglanşyk Ýok", offP: "Internet sazlamalaryňyzy barlaň.", call: "Jaň et" },
-            tr: { h1: "Güvenilir <span>Lojistik</span>", hp: "CN ➔ TM arası en hızlı kargo.", s1: "Müşteri", s2: "Deneyim", s3: "Saat Hizmet", f1t: "Hız", f1p: "7-14 günde teslimat.", f2t: "Güven", f2p: "Sigortalı gönderiler.", th: "Kargo Takip", tp: "Kargonuzun durumunu öğrenmek için aşağıdaki butona tıklayın.", tl: "TAKİP SAYFASINA GİT", q1: "Kaç günde ulaşır?", a1: "Hava: 7-14 gün. Kara: 20-25 gün.", q2: "Fiyatlar nasıl?", a2: "En uygun fiyatlar için iletişime geçin.", offH: "Bağlantı Yok", offP: "İnternet ayarlarınızı kontrol edin.", call: "Ara" },
-            en: { h1: "Reliable <span>Logistics</span>", hp: "Fastest cargo between CN ➔ TM.", s1: "Clients", s2: "Experience", s3: "24/7 Service", f1t: "Speed", f1p: "Delivery in 7-14 days.", f2t: "Security", f2p: "Insured cargo.", th: "Track Cargo", tp: "Click the button below to see your cargo status.", tl: "GO TO TRACKING PAGE", q1: "Delivery time?", a1: "Air: 7-14 days. Road: 20-25 days.", q2: "Pricing?", a2: "Best rates calculated for your cargo.", offH: "No Connection", offP: "Check your settings.", call: "Call" },
-            ru: { h1: "Надежная <span>Логистика</span>", hp: "Быстрое карго CN ➔ TM.", s1: "Клиенты", s2: "Опыт", s3: "24/7 Сервис", f1t: "Скорость", f1p: "Доставка за 7-14 дней.", f2t: "Защита", f2p: "Застрахованные грузы.", th: "Отследить груз", tp: "Нажмите кнопку ниже, чтобы узнать статус груза.", tl: "ПЕРЕЙТИ К ОТСЛЕЖИВАНИЮ", q1: "Сроки доставки?", a1: "Авиа: 7-14 дней. Авто: 20-25 дней.", q2: "Цены?", a2: "Самые выгодные тарифы у нас.", offH: "Нет сети", offP: "Проверьте интернет.", call: "Позвонить" }
+            tm: { h1: "Ynamly <span>Kargo</span>", hp: "HT ➔ TM arasynda iň çalt kargo.", s1: "Müşderi", s2: "Tejribe", s3: "Sagat Hyzmat", f1t: "Tizlik", f1p: "7-14 günde gowşuryş.", f2t: "Ynamly", f2p: "Ätiýaçlandyrylan ýükler.", th: "Ýüküňi yzarla", tp: "Harydyňyzyň ýagdaýyny we nirededigini bilmek üçin aşakdaky düwmä basyň.", tl: "GÖZLEG SAHYPASINA GIT", q1: "Näçe günde barýar?", a1: "Howa ýoly: 7-14 gün. Gara ýol: 20-25 gün.", q2: "Bahalar nähili?", a2: "Iň amatly nyrhlar biziň bilen.", offH: "Baglanşyk Ýok", offP: "Internet sazlamalaryňyzy barlaň.", call: "Jaň et" },
+            tr: { h1: "Güvenilir <span>kargo</span>", hp: "CN ➔ TM arası en hızlı kargo.", s1: "Müşteri", s2: "Deneyim", s3: "Saat Hizmet", f1t: "Hız", f1p: "7-14 günde teslimat.", f2t: "Güven", f2p: "Sigortalı gönderiler.", th: "Kargo Takip", tp: "Kargonuzun durumunu öğrenmek için aşağıdaki butona tıklayın.", tl: "TAKİP SAYFASINA GİT", q1: "Kaç günde ulaşır?", a1: "Hava: 7-14 gün. Kara: 20-25 gün.", q2: "Fiyatlar nasıl?", a2: "En uygun fiyatlar için iletişime geçin.", offH: "Bağlantı Yok", offP: "İnternet ayarlarınızı kontrol edin.", call: "Ara" },
+            en: { h1: "Reliable <span>cargo</span>", hp: "Fastest cargo between CN ➔ TM.", s1: "Clients", s2: "Experience", s3: "24/7 Service", f1t: "Speed", f1p: "Delivery in 7-14 days.", f2t: "Security", f2p: "Insured cargo.", th: "Track Cargo", tp: "Click the button below to see your cargo status.", tl: "GO TO TRACKING PAGE", q1: "Delivery time?", a1: "Air: 7-14 days. Road: 20-25 days.", q2: "Pricing?", a2: "Best rates calculated for your cargo.", offH: "No Connection", offP: "Check your settings.", call: "Call" },
+            ru: { h1: "Надежная <span>груз</span>", hp: "Быстрое карго CN ➔ TM.", s1: "Клиенты", s2: "Опыт", s3: "24/7 Сервис", f1t: "Скорость", f1p: "Доставка за 7-14 дней.", f2t: "Защита", f2p: "Застрахованные грузы.", th: "Отследить груз", tp: "Нажмите кнопку ниже, чтобы узнать статус груза.", tl: "ПЕРЕЙТИ К ОТСЛЕЖИВАНИЮ", q1: "Сроки доставки?", a1: "Авиа: 7-14 дней. Авто: 20-25 дней.", q2: "Цены?", a2: "Самые выгодные тарифы у нас.", offH: "Нет сети", offP: "Проверьте интернет.", call: "Позвонить" }
         };
 
         function setL(l) {
@@ -175,4 +398,5 @@
     </script>
 </body>
 
-</html>
+    </html>
+    
