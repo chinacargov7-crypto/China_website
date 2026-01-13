@@ -15,6 +15,13 @@
         nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; border-bottom: 1px solid var(--border); }
         .back-link { color: var(--text); text-decoration: none; font-weight: 600; font-size: 14px; }
 
+        /* Dil Menüsü Stilleri */
+        .lang-dropdown { position: relative; }
+        .lang-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .lang-menu { position: absolute; top: 110%; right: 0; background: var(--card); border: 1px solid var(--border); border-radius: 12px; display: none; min-width: 120px; z-index: 100; }
+        .lang-menu.show { display: block; }
+        .lang-item { padding: 10px 15px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--border); }
+
         .container { padding: 40px 5%; max-width: 500px; margin: auto; }
         .input-group { position: relative; margin-top: 20px; }
         input { width: 100%; background: var(--card); border: 2px solid var(--border); padding: 18px; border-radius: 20px; color: var(--text); font-size: 16px; outline: none; transition: 0.3s; }
@@ -33,7 +40,17 @@
 
     <nav>
         <a href="index.html" class="back-link" id="nav-back"><i class="fas fa-chevron-left"></i> Yza</a>
-        <div style="font-weight:900; letter-spacing:-1px">China Cargo<span style="color:var(--primary)">.</span>TRACK</div>
+        
+        <div class="lang-dropdown">
+            <button class="lang-btn" onclick="toggleLMenu()">🌐 <span id="cur-l">TM</span></button>
+            <div class="lang-menu" id="l-menu">
+                <div class="lang-item" onclick="changeL('tm')">Türkmençe</div>
+                <div class="lang-item" onclick="changeL('tr')">Türkçe</div>
+                <div class="lang-item" onclick="changeL('en')">English</div>
+                <div class="lang-item" onclick="changeL('ru')">Русский</div>
+            </div>
+        </div>
+
         <i class="fas fa-adjust" onclick="document.body.classList.toggle('light-mode')" style="cursor:pointer"></i>
     </nav>
 
@@ -59,17 +76,32 @@
 
     <script>
         const langDict = {
-            tm: { back: "Geri", title: "Kargo Gözlegi", desc: "Koduňyzy giriziň we maglumatlary alyň.", btn: "GÖZLE", err: "Kod tapylmady!", loc: "Ýeri:", kg: "Agramy:", date: "Sene:", place: "Meselem: EL777" },
+            tm: { back: "Yza", title: "Kargo Gözlegi", desc: "Koduňyzy giriziň we maglumatlary alyň.", btn: "GÖZLE", err: "Kod tapylmady!", loc: "Ýeri:", kg: "Agramy:", date: "Sene:", place: "Meselem: EL777" },
             tr: { back: "Geri", title: "Kargo Takibi", desc: "Kodunuzu girin ve bilgileri alın.", btn: "SORGULA", err: "Kod bulunamadı!", loc: "Konum:", kg: "Ağırlık:", date: "Tarih:", place: "Örn: EL777" },
             en: { back: "Back", title: "Track Cargo", desc: "Enter your code and get details.", btn: "TRACK", err: "Code not found!", loc: "Location:", kg: "Weight:", date: "Date:", place: "Ex: EL777" },
             ru: { back: "Назад", title: "Поиск Груза", desc: "Введите код для получения данных.", btn: "ПОИСК", err: "Код не найден!", loc: "Место:", kg: "Вес:", date: "Дата:", place: "Пример: EL777" }
         };
 
-        // Hafızadaki dili al
-        const currentLang = localStorage.getItem('selectedLang') || 'tm';
+        // Hafızadaki dili al veya varsayılan TM yap
+        let currentLang = localStorage.getItem('selectedLang') || 'tm';
+
+        function toggleLMenu() {
+            document.getElementById('l-menu').classList.toggle('show');
+        }
+
+        function changeL(l) {
+            currentLang = l;
+            localStorage.setItem('selectedLang', l);
+            applyLanguage();
+            document.getElementById('l-menu').classList.remove('show');
+            // Eğer ekranda bir kargo sonucu varsa onu da güncelle
+            const id = document.getElementById('cargoID').value.trim().toUpperCase();
+            if(id) trackCargo(); 
+        }
 
         function applyLanguage() {
             const d = langDict[currentLang];
+            document.getElementById('cur-l').innerText = currentLang.toUpperCase();
             document.getElementById('nav-back').innerHTML = `<i class="fas fa-chevron-left"></i> ${d.back}`;
             document.getElementById('page-title').innerText = d.title;
             document.getElementById('page-desc').innerText = d.desc;
@@ -90,6 +122,7 @@
                 err.style.display = 'none';
                 card.style.display = 'block';
                 
+                // Durum bilgisini seçili dilde getir
                 document.getElementById('out-status').innerText = data.status[currentLang];
                 document.getElementById('out-id').innerText = id;
                 document.getElementById('out-loc').innerText = data.loc;
@@ -97,8 +130,17 @@
                 document.getElementById('out-date').innerText = data.date;
             } else {
                 card.style.display = 'none';
-                err.style.display = 'block';
-                err.innerText = langDict[currentLang].err;
+                if(id !== "") {
+                    err.style.display = 'block';
+                    err.innerText = langDict[currentLang].err;
+                }
+            }
+        }
+
+        // Sayfa dışına tıklandığında menüyü kapat
+        window.onclick = function(e) {
+            if (!e.target.closest('.lang-dropdown')) {
+                document.getElementById('l-menu').classList.remove('show');
             }
         }
 
